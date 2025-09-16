@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selenium Element Finder</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 25px;
+        }
+        
+        .form-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #3498db;
+        }
+        
+        h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .results {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .suggestion {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .highlight {
+            background: yellow;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Selenium Element Finder</h1>
+            <p>Debug your element selection issues</p>
+        </header>
+        
+        <div class="content">
+            <div class="form-container">
+                <h2>Test Your Element Selectors</h2>
+                
+                <div class="form-group">
+                    <label for="htmlInput">Paste your login form HTML:</label>
+                    <textarea id="htmlInput" rows="6" placeholder="Paste the HTML of your login form here..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: monospace;"></textarea>
+                </div>
+                
+                <button onclick="analyzeHTML()">Analyze HTML</button>
+                
+                <div class="suggestion">
+                    <p><strong>Quick Tip:</strong> In your Python code, you're using:</p>
+                    <div class="code-block">email_box = WebDriverWait(driver, 20).until(
+    EC.presence_of_element_located((By.NAME, "name"))
+)</div>
+                    <p>But the email field might have a different identifier like <code>id="email"</code>, <code>name="email"</code>, or a different class.</p>
+                </div>
+            </div>
+            
+            <div id="results" class="results" style="display: none;">
+                <h2>Analysis Results</h2>
+                <p id="resultText"></p>
+                
+                <div class="code-block" id="codeSuggestion"></div>
+                
+                <div class="suggestion">
+                    <p><strong>Next Steps:</strong></p>
+                    <ol>
+                        <li>Update your selector in the Python code based on the suggestion above</li>
+                        <li>Add explicit wait for the element to be clickable:
+                            <div class="code-block">WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.ID, "email"))
+)</div>
+                        </li>
+                        <li>Consider adding a brief pause before interacting with the element</li>
+                        <li>If the form is in an iframe, make sure to switch to it first</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function analyzeHTML() {
+            const htmlInput = document.getElementById('htmlInput').value;
+            const resultsDiv = document.getElementById('results');
+            const resultText = document.getElementById('resultText');
+            const codeSuggestion = document.getElementById('codeSuggestion');
+            
+            if (!htmlInput) {
+                resultText.innerHTML = "Please paste the HTML of your login form first.";
+                resultsDiv.style.display = 'block';
+                return;
+            }
+            
+            // Create a temporary element to parse the HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlInput;
+            
+            // Look for input fields
+            const inputs = tempDiv.querySelectorAll('input');
+            let emailField = null;
+            
+            // Try to find the email field
+            for (let input of inputs) {
+                const type = input.type.toLowerCase();
+                const name = input.name ? input.name.toLowerCase() : '';
+                const id = input.id ? input.id.toLowerCase() : '';
+                
+                if (type === 'email' || name.includes('email') || name.includes('user') || 
+                    id.includes('email') || id.includes('user')) {
+                    emailField = input;
+                    break;
+                }
+            }
+            
+            if (!emailField) {
+                // If no obvious email field, just get the first text input
+                for (let input of inputs) {
+                    if (input.type.toLowerCase() === 'text') {
+                        emailField = input;
+                        break;
+                    }
+                }
+            }
+            
+            if (emailField) {
+                let identifier = '';
+                let selectorType = '';
+                
+                if (emailField.id) {
+                    identifier = emailField.id;
+                    selectorType = 'ID';
+                } else if (emailField.name) {
+                    identifier = emailField.name;
+                    selectorType = 'NAME';
+                } else if (emailField.className) {
+                    identifier = emailField.className.split(' ')[0];
+                    selectorType = 'CLASS_NAME';
+                } else {
+                    // If no obvious identifiers, use a more complex selector
+                    const attrs = [];
+                    for (let attr of emailField.attributes) {
+                        if (attr.name !== 'type' && attr.value) {
+                            attrs.push(`[${attr.name}="${attr.value}"]`);
+                        }
+                    }
+                    identifier = `input${attrs.join('')}`;
+                    selectorType = 'CSS_SELECTOR';
+                }
+                
+                resultText.innerHTML = `Found the email field! It has ${selectorType}: <span class="highlight">${identifier}</span>`;
+                
+                // Generate code suggestion
+                let code = '';
+                if (selectorType === 'ID') {
+                    code = `email_box = WebDriverWait(driver, 20).until(\n    EC.presence_of_element_located((By.ID, "${identifier}"))\n)`;
+                } else if (selectorType === 'NAME') {
+                    code = `email_box = WebDriverWait(driver, 20).until(\n    EC.presence_of_element_located((By.NAME, "${identifier}"))\n)`;
+                } else if (selectorType === 'CLASS_NAME') {
+                    code = `email_box = WebDriverWait(driver, 20).until(\n    EC.presence_of_element_located((By.CLASS_NAME, "${identifier}"))\n)`;
+                } else {
+                    code = `email_box = WebDriverWait(driver, 20).until(\n    EC.presence_of_element_located((By.CSS_SELECTOR, "${identifier}"))\n)`;
+                }
+                
+                codeSuggestion.textContent = code;
+            } else {
+                resultText.innerHTML = "Could not identify the email field in the provided HTML. Please check if you've pasted the complete form.";
+            }
+            
+            resultsDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

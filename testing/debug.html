@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form Selector Debugger</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .debug-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .solutions {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        h3 {
+            margin: 15px 0 10px;
+            color: #2c3e50;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            font-family: monospace;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button.secondary {
+            background-color: #95a5a6;
+        }
+        
+        button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .results {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .note {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .success {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .error {
+            background: #ffebee;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #f44336;
+        }
+        
+        .selector-test {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .highlight {
+            background: yellow;
+            color: black;
+            font-weight: bold;
+            padding: 2px 4px;
+        }
+        
+        .current-config {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Login Form Selector Debugger</h1>
+            <p>Fix your Selenium login form selectors</p>
+        </header>
+        
+        <div class="content">
+            <div class="debug-section">
+                <h2>Debug Your Selector Configuration</h2>
+                
+                <div class="current-config">
+                    <h3>Your Current Configuration:</h3>
+                    <div class="results">LOGIN_EMAIL_SELECTORS = [
+    {"by": "name", "value": "email"},
+    {"by": "name", "value": "username"},
+    {"by": "id", "value": "email"},
+    {"by": "id", "value": "username"},
+    {"by": "css", "value": "input[type='email']"},
+    {"by": "css", "value": "input[name*='user']"},
+]</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="htmlInput">Paste your login form HTML:</label>
+                    <textarea id="htmlInput" rows="8" placeholder="Paste the HTML of your login form here..."></textarea>
+                </div>
+                
+                <button onclick="analyzeHTML()">Analyze HTML</button>
+                <button onclick="clearFields()" class="secondary">Clear</button>
+                
+                <div id="analysisResults">
+                    <h3>Analysis Results:</h3>
+                    <div id="resultText"></div>
+                    
+                    <div id="suggestedCode" class="results"></div>
+                    
+                    <div id="updatedConfig" class="results"></div>
+                </div>
+            </div>
+            
+            <div class="solutions">
+                <h2>Solutions for Selector Issues</h2>
+                
+                <div class="note">
+                    <p><strong>The Problem:</strong> Your current selectors don't match the email field on your target website.</p>
+                    <p>The email field might be using a different identifier like <span class="highlight">"name"</span>, <span class="highlight">"login"</span>, or something else.</p>
+                </div>
+                
+                <h3>1. Update Your Selector Configuration</h3>
+                <p>Based on the analysis, add the missing selector to your configuration:</p>
+                
+                <div class="results" id="configSolution"># Add this to your LOGIN_EMAIL_SELECTORS list</div>
+                
+                <h3>2. Implement a Robust Selector Strategy</h3>
+                <p>Modify your Python code to try multiple selectors:</p>
+                
+                <div class="results">def find_login_element(driver, selectors):
+    """Try multiple selectors to find login elements"""
+    for selector in selectors:
+        try:
+            element = WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((getattr(By, selector["by"].upper()), selector["value"]))
+            )
+            return element
+        except (TimeoutException, NoSuchElementException):
+            continue
+    return None
+
+# Usage:
+email_box = find_login_element(driver, LOGIN_EMAIL_SELECTORS)
+if email_box:
+    email_box.clear()
+    email_box.send_keys(settings.USERNAME)
+else:
+    print("Could not find email field with any selector")
+    save_debug(driver, "email_field_not_found")
+</div>
+                
+                <h3>3. Add More Selector Options</h3>
+                <p>Expand your selector list to include more possibilities:</p>
+                
+                <div class="results">LOGIN_EMAIL_SELECTORS = [
+    {"by": "name", "value": "email"},
+    {"by": "name", "value": "username"},
+    {"by": "name", "value": "login"},
+    {"by": "name", "value": "user"},
+    {"by": "id", "value": "email"},
+    {"by": "id", "value": "username"},
+    {"by": "id", "value": "login"},
+    {"by": "id", "value": "user"},
+    {"by": "css", "value": "input[type='email']"},
+    {"by": "css", "value": "input[name*='mail']"},
+    {"by": "css", "value": "input[name*='user']"},
+    {"by": "css", "value": "input[autocomplete*='mail']"},
+    {"by": "css", "value": "input[autocomplete='username']"},
+    {"by": "xpath", "value": "//input[contains(@placeholder, 'email')]"},
+    {"by": "xpath", "value": "//input[contains(@placeholder, 'username')]"},
+]</div>
+                
+                <h3>4. Debug with Screenshots</h3>
+                <p>Add detailed debugging to identify what's happening:</p>
+                
+                <div class="results"># Add this to your login function
+print("[DEBUG] Trying to find email field...")
+for i, selector in enumerate(LOGIN_EMAIL_SELECTORS):
+    try:
+        element = driver.find_element(getattr(By, selector["by"].upper()), selector["value"])
+        print(f"[DEBUG] Found element with {selector['by']}={selector['value']}")
+        save_debug(driver, f"email_field_found_{i}")
+        break
+    except NoSuchElementException:
+        print(f"[DEBUG] Not found with {selector['by']}={selector['value']}")
+        continue</div>
+                
+                <div class="success">
+                    <p><strong>Pro Tip:</strong> Always check if the login form is inside an iframe. If it is, you'll need to switch to the iframe first before trying to find the elements.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function analyzeHTML() {
+            const htmlInput = document.getElementById('htmlInput').value;
+            const resultText = document.getElementById('resultText');
+            const suggestedCode = document.getElementById('suggestedCode');
+            const updatedConfig = document.getElementById('updatedConfig');
+            const configSolution = document.getElementById('configSolution');
+            
+            if (!htmlInput) {
+                resultText.innerHTML = "<div class='error'>Please paste the HTML of your login form first.</div>";
+                return;
+            }
+            
+            // Create a temporary element to parse the HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlInput;
+            
+            // Look for input fields
+            const inputs = tempDiv.querySelectorAll('input');
+            let emailField = null;
+            
+            // Try to find the email field
+            for (let input of inputs) {
+                const type = input.type.toLowerCase();
+                const name = input.name ? input.name.toLowerCase() : '';
+                const id = input.id ? input.id.toLowerCase() : '';
+                const placeholder = input.placeholder ? input.placeholder.toLowerCase() : '';
+                const autocomplete = input.autocomplete ? input.autocomplete.toLowerCase() : '';
+                
+                if (type === 'email' || name.includes('email') || name.includes('user') || name.includes('login') || 
+                    id.includes('email') || id.includes('user') || id.includes('login') ||
+                    placeholder.includes('email') || placeholder.includes('user') || placeholder.includes('login') ||
+                    autocomplete.includes('email') || autocomplete.includes('user') || autocomplete.includes('username')) {
+                    emailField = input;
+                    break;
+                }
+            }
+            
+            if (!emailField) {
+                // If no obvious email field, just get the first text input
+                for (let input of inputs) {
+                    if (input.type.toLowerCase() === 'text') {
+                        emailField = input;
+                        break;
+                    }
+                }
+            }
+            
+            if (emailField) {
+                let identifier = '';
+                let selectorType = '';
+                let selectorCode = '';
+                let configAddition = '';
+                
+                if (emailField.id) {
+                    identifier = emailField.id;
+                    selectorType = 'ID';
+                    selectorCode = `email_box = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.ID, "${identifier}"))
+)`;
+                    configAddition = `{"by": "id", "value": "${identifier}"}`;
+                } else if (emailField.name) {
+                    identifier = emailField.name;
+                    selectorType = 'NAME';
+                    selectorCode = `email_box = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.NAME, "${identifier}"))
+)`;
+                    configAddition = `{"by": "name", "value": "${identifier}"}`;
+                } else if (emailField.className) {
+                    identifier = emailField.className.split(' ')[0];
+                    selectorType = 'CLASS_NAME';
+                    selectorCode = `email_box = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CLASS_NAME, "${identifier}"))
+)`;
+                    configAddition = `{"by": "class", "value": "${identifier}"}`;
+                } else {
+                    // If no obvious identifiers, use a more complex selector
+                    const attrs = [];
+                    for (let attr of emailField.attributes) {
+                        if (attr.name !== 'type' && attr.value) {
+                            attrs.push(`[${attr.name}="${attr.value}"]`);
+                        }
+                    }
+                    identifier = `input${attrs.join('')}`;
+                    selectorType = 'CSS_SELECTOR';
+                    selectorCode = `email_box = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, "${identifier}"))
+)`;
+                    configAddition = `{"by": "css", "value": "${identifier}"}`;
+                }
+                
+                resultText.innerHTML = `<div class="success">Found the email field! It has ${selectorType}: <span class="highlight">${identifier}</span></div>`;
+                suggestedCode.textContent = selectorCode;
+                
+                // Check if this selector is already in the configuration
+                const isInConfig = checkIfInConfig(identifier, selectorType);
+                
+                if (!isInConfig) {
+                    updatedConfig.textContent = `# Add this to your LOGIN_EMAIL_SELECTORS:
+${configAddition}`;
+                    
+                    configSolution.textContent = `# Add this to your LOGIN_EMAIL_SELECTORS list:
+${configAddition}`;
+                } else {
+                    updatedConfig.textContent = "# This selector is already in your configuration";
+                    configSolution.textContent = "# This selector is already in your configuration";
+                }
+                
+            } else {
+                resultText.innerHTML = "<div class='error'>Could not identify the email field in the provided HTML. Please check if you've pasted the complete form.</div>";
+                suggestedCode.textContent = "";
+                updatedConfig.textContent = "";
+            }
+        }
+        
+        function checkIfInConfig(identifier, selectorType) {
+            // This is a simplified check - in a real scenario, you'd need to parse the actual config
+            const commonSelectors = [
+                "email", "username", "user", "login"
+            ];
+            
+            return commonSelectors.some(sel => identifier.toLowerCase().includes(sel));
+        }
+        
+        function clearFields() {
+            document.getElementById('htmlInput').value = '';
+            document.getElementById('resultText').innerHTML = '';
+            document.getElementById('suggestedCode').textContent = '';
+            document.getElementById('updatedConfig').textContent = '';
+        }
+    </script>
+</body>
+</html>
