@@ -1,30 +1,3 @@
-# from selenium import webdriver
-# from selenium.webdriver.chrome.service import Service
-# from selenium.webdriver.chrome.options import Options
-
-# def init_browser(headless=True):
-#     chrome_options = Options()
-#     if headless:
-#         chrome_options.add_argument("--headless=new")
-#     chrome_options.add_argument("--no-sandbox")
-#     chrome_options.add_argument("--disable-dev-shm-usage")
-
-#     driver = webdriver.Chrome(options=chrome_options)
-#     return driver
-
-# import undetected_chromedriver as uc
-
-# def init_browser(headless=False):
-#     options = uc.ChromeOptions()
-#     if headless:
-#         options.add_argument("--headless=new")
-#     options.add_argument("--no-sandbox")
-#     options.add_argument("--disable-dev-shm-usage")
-
-#     driver = uc.Chrome(options=options)
-#     return driver
-
-
 # booking/browser.py
 # Creates an undetected Chrome browser instance with human-like settings.
 

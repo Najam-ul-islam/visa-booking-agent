@@ -82,18 +82,51 @@
 
 
 
-from booking.browser import init_browser
-from booking.login import login
-from config.settings import USERNAME, PASSWORD
+# from booking.browser import init_browser
+# from booking.login import login
+# from config.settings import EMAIL, PASSWORD
 
-if USERNAME is None or PASSWORD is None:
-    raise ValueError("USERNAME and PASSWORD must not be None.")
+# if EMAIL is None or PASSWORD is None:
+#     raise ValueError("USERNAME and PASSWORD must not be None.")
 
-driver = init_browser(headless=False, proxy=None)  # headless=False 
-try:
-    login(driver, headless=False)
+# driver = init_browser(headless=False, proxy=None)  # headless=False 
+# try:
+#     login(driver, headless=False)
     
-    print("Logged in Successfully!!!!!!!!!!")
-    # continue with scrape/book flow...
-finally:
-    driver.quit()
+#     # continue with scrape/book flow...
+# finally:
+#     driver.quit()
+
+from booking.browser import init_browser
+from booking.login import login, extract_slots
+
+def main():
+    # ---- Create browser ----
+    driver = init_browser(headless=False)  # set True if you want headless automation
+    try:
+        # ---- Run login flow ----
+        if login(driver):
+            print("[✅] Logged in successfully!")
+
+            # ---- Extract slots ----
+            slots = extract_slots(driver)
+            if slots:
+                print(f"[🎉] Found {len(slots)} slot(s):")
+                for s in slots:
+                    print("   ", s)
+            else:
+                print("[⚠️] No slots found.")
+        else:
+            print("[❌] Login failed.")
+
+        # ---- Optional pause for debugging ----
+        input("Press Enter to close browser...")
+
+    finally:
+        print("[*] Closing browser gracefully...")
+        driver.quit()
+
+
+if __name__ == "__main__":
+    main()
+
