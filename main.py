@@ -97,36 +97,102 @@
 # finally:
 #     driver.quit()
 
+# from booking.browser import init_browser
+# from booking.login import login, extract_slots
+
+# def main():
+#     # ---- Create browser ----
+#     driver = init_browser(headless=False)  # set True if you want headless automation
+#     try:
+#         # ---- Run login flow ----
+#         if login(driver):
+#             print("[✅] Logged in successfully!")
+
+#             # ---- Extract slots ----
+#             slots = extract_slots(driver)
+#             if slots:
+#                 print(f"[🎉] Found {len(slots)} slot(s):")
+#                 for s in slots:
+#                     print("   ", s)
+#             else:
+#                 print("[⚠️] No slots found.")
+#         else:
+#             print("[❌] Login failed.")
+
+#         # ---- Optional pause for debugging ----
+#         input("Press Enter to close browser...")
+
+#     finally:
+#         print("[*] Closing browser gracefully...")
+#         driver.quit()
+
+
+# if __name__ == "__main__":
+#     main()
+
+# from booking.browser import init_browser
+# from booking.login import login
+# from booking.slots import extract_slots, save_slots_to_csv
+
+# def main():
+#     driver = init_browser(headless=False)
+#     try:
+#         if login(driver):
+#             slots = extract_slots(driver)
+#             if slots:
+#                 print("\n📅 All slots (month-wise):")
+#                 for s in slots:
+#                     print(f"  {s}")
+#                 available = [s for s in slots if s["status"] == "Available"]
+#                 print("\n🎉 Available slots:")
+#                 if available:
+#                     for s in available:
+#                         print(f"  {s}")
+#                 else:
+#                     print("  ❌ No available slots right now.")
+#                 save_slots_to_csv(slots)
+#         else:
+#             print("[❌] Could not log in. Aborting.")
+#     finally:
+#         input("Press Enter to close browser...")  # keep browser open
+#         driver.quit()
+
+# if __name__ == "__main__":
+#     main()
+
+
 from booking.browser import init_browser
-from booking.login import login, extract_slots
+from booking.login import login
+from booking.slots import save_slots_to_csv
 
 def main():
-    # ---- Create browser ----
-    driver = init_browser(headless=False)  # set True if you want headless automation
+    # Start browser (headless=False so you can see & solve Turnstile)
+    driver = init_browser(headless=False)
+
     try:
-        # ---- Run login flow ----
+        # Run login flow
         if login(driver):
-            print("[✅] Logged in successfully!")
-
-            # ---- Extract slots ----
+            # Extract slots after successful login
+            from booking.slots import extract_slots
             slots = extract_slots(driver)
-            if slots:
-                print(f"[🎉] Found {len(slots)} slot(s):")
-                for s in slots:
-                    print("   ", s)
-            else:
-                print("[⚠️] No slots found.")
-        else:
-            print("[❌] Login failed.")
 
-        # ---- Optional pause for debugging ----
-        input("Press Enter to close browser...")
+            if slots:
+                print(f"\n📅 All slots found: {len(slots)}")
+                for s in slots:
+                    print("  ", s)
+
+                # Save into CSV
+                save_slots_to_csv(slots)
+            else:
+                print("\n⚠️ No slots extracted this run.")
+        else:
+            print("\n❌ Login failed. No slots extracted.")
 
     finally:
-        print("[*] Closing browser gracefully...")
+        # Keep browser open after run (optional)
+        input("\nPress Enter to close browser...")
         driver.quit()
 
 
 if __name__ == "__main__":
     main()
-
