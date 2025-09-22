@@ -9,8 +9,16 @@ SITE_URL = os.getenv("SITE_URL")
 # Credentials
 EMAIL = os.getenv("EMAIL", "")
 PASSWORD = os.getenv("PASSWORD", "")
-
+# Email Settings
+SMTP_SERVER = os.getenv("SMTP_SERVER", "")
+# SMTP_PORT = os.getenv("SMTP_PORT")
+SENDER_EMAIL = os.getenv("SENDER_EMAIL")
+SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
+RECIPIENT_EMAIL = os.getenv("RECIPIENT_EMAIL")
+EMAIL_APP_PASSWORD = os.getenv("EMAIL_APP_PASSWORD")
+# Max login tries -> if fails
 MAX_LOGIN_ATTEMPTS = os.getenv("MAX_LOGIN_ATTEMPTS")
+
 # Screenshot + HTML dump toggle
 SAVE_SCREENSHOTS = os.getenv("SAVE_SCREENSHOTS", "true").lower() in ("true", "1", "yes")
 

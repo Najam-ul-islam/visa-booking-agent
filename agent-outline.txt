@@ -1,0 +1,5 @@
+agents-task
+--------------
+1- silently checks for slot avalibility every 15mins
+2- Notify via Email if slot is available
+3- books the available slot(TODO)  
